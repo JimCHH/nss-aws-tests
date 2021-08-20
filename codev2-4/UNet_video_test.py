@@ -86,7 +86,7 @@ def Unet_test(images, model, Size_X, Size_Y):
 
 
     
-name_load_model = 'C:/Users/lab70929/Desktop/code/trained_model/UNet/'
+name_load_model = 'trained_model/UNet/'
 # name_load_model = './trained_model_bk/Cross_validation/base/4f32ch/'
 cross_val_num = 18
 
@@ -113,7 +113,7 @@ model.to(device)
 left_roi = []
 right_roi = []
 
-video_folder = "C:/Users/lab70929/Downloads/Debug_s7.2.5.1/Debug/Result/"
+video_folder = "../Result/"
 fps = []
 video_list = glob.glob(video_folder+"*/*.mp4")
 save_time = []
