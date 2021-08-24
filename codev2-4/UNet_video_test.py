@@ -166,7 +166,7 @@ while (cap.isOpened()):
             right_result = images[i*2+1].astype(np.uint8)
             result = np.concatenate((left_result, right_result), axis = 1)
             out.write(result)
-            cv2.imshow('frame', result)
+            # cv2.imshow('frame', result)
         
 
         frame_count +=batch_size
