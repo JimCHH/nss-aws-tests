@@ -358,7 +358,7 @@ for video_name in glob.glob('../Result/*/*.mp4'):
             
             
             out.write(result)           
-            cv2.imshow('frame', result)
+            # cv2.imshow('frame', result)
     #            cv2.imwrite(str(frame_counter) + '.jpg', result)
             frame_counter +=1        
             
