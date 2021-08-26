@@ -113,19 +113,19 @@ model.to(device)
 left_roi = []
 right_roi = []
 
-video_folder = "../Result/"
+# video_folder = "../Result/"
 fps = []
-video_list = glob.glob(video_folder+"*/*.mp4")
+mp4s = glob.glob('../Result/*/*.mp4')
 save_time = []
 #for video_name in video_list:
-video_name = video_list[0]
+# video_name = video_list[0]
 output_name = "testing_video.mp4"
 
-print("video_name = ", video_name)
+print(f'Testing on {mp4s[0]}')
 
 out = cv2.VideoWriter(output_name, fourcc, 210, (384, 144), 0)
 #video_name = "video/test/111111_A000000000.avi"
-cap = cv2.VideoCapture(video_name)
+cap = cv2.VideoCapture(mp4s[0])
 frame_count = 0
 
 

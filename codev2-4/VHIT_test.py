@@ -262,17 +262,17 @@ fps = []
 #read data
 #video_folder = "C:/Users/lab70929/Downloads/usbcam_s3/usbcam_s/usbcam/bin/Debug/success/"
 
-video_folder = os.getcwd()[:-6] + "Result"
-output_folder = "video/"
-video_list = glob.glob(video_folder+ "/*/" + "*.mp4")
+# video_folder = os.getcwd()[:-6] + "Result"
+output_folder = '../Reports/'#"video/"
+# video_list = glob.glob(video_folder+ "/*/" + "*.mp4")
 gain_type = 0
 
 #imu_list = glob.glob(video_folder+"*.csv")
 #video_name = video_list[11]
-for video_name in video_list:
+for video_name in glob.glob('../Result/*/*.mp4'):
     start_time = time.time()
        
-    folder = output_folder + video_name.split("\\")[-2]
+    folder = output_folder + video_name.split("/")[-2]
     try:
         os.mkdir(folder)
     except:
@@ -283,7 +283,7 @@ for video_name in video_list:
     user_info, title, splitted_data = read_csv(vhit_name)
     if len(splitted_data) == 0 :
         continue  
-    output_video_name = folder + "/" + video_name.split("\\")[-1]
+    output_video_name = folder + "/" + video_name.split("/")[-1]
     xml_file_name = output_video_name.replace(".mp4",".xml")
 
     right_output_pdf_name = output_video_name[:-4] + "_right_eye_test.pdf" 
@@ -845,7 +845,7 @@ for video_name in video_list:
     HITest = ICSPatient["HITest"]
     HITest["NumAcceptedLeftImpulses"] = str(left_count)
     HITest["NumAcceptedRightImpulses"] = str(right_count)
-    HITest["PatientUID"] = video_name.split("\\")[-1][:-4]
+    HITest["PatientUID"] = video_name.split("/")[-1][:-4]
     
     HIImpulse_temp = HITest["HIImpulse"][0].copy()
     HITest["HIImpulse"] = []
@@ -862,7 +862,7 @@ for video_name in video_list:
     ICSVideo = ICSPatient["ICSVideo"]
     ICSVideo["FileNameWithPath"] = video_name
     ICSVideo["FrameRate"] = str(210)
-    ICSVideo["VideoUID"] = video_name.split("\\")[-1][:-4]
+    ICSVideo["VideoUID"] = video_name.split("/")[-1][:-4]
 
 
 
