@@ -271,12 +271,13 @@ gain_type = 0
 #video_name = video_list[11]
 for video_name in glob.glob('../Result/*/*.mp4'):
     start_time = time.time()
-       
+    print(f'Testing on {video_name}')
     folder = output_folder + video_name.split("/")[-2]
     try:
         os.mkdir(folder)
+        print(f'Making {folder}')
     except:
-        print("資料夾已存在")
+        print(f'{folder}資料夾已存在')
     
     vhit_name = video_name.replace(".mp4", ".csv")
     
