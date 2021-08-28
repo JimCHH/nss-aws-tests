@@ -14,7 +14,7 @@ import parameters
 import cv2
 import glob
 import pandas as pd
-# import xmltodict
+import xmltodict
 from scipy.interpolate import interp1d
 from sklearn.linear_model import LinearRegression
 device = torch.device("cuda")
@@ -867,9 +867,9 @@ for mp4_path in glob.glob(f'{in_path}/*/*.mp4'):
 
 
 
-    # out_xml = xmltodict.unparse(templete, pretty=True)
-    # with open(output_xml, 'w') as file:
-    #     file.write(out_xml)
+    out_xml = xmltodict.unparse(templete, pretty=True)
+    with open(output_xml, 'w') as file:
+        file.write(out_xml)
     
     
 
