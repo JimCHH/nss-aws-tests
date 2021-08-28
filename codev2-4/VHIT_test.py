@@ -263,35 +263,35 @@ fps = []
 #video_folder = "C:/Users/lab70929/Downloads/usbcam_s3/usbcam_s/usbcam/bin/Debug/success/"
 
 # video_folder = os.getcwd()[:-6] + "Result"
-output_folder = '~/Reports/'#"video/"
+in_path  = os.path.expanduser('~') + '/first_in'
+out_path = os.path.expanduser('~') + '/first_out'
 # video_list = glob.glob(video_folder+ "/*/" + "*.mp4")
 gain_type = 0
 
 #imu_list = glob.glob(video_folder+"*.csv")
-#video_name = video_list[11]
-for video_name in glob.glob('../Result/*/*.mp4'):
+#mp4_path = video_list[11]
+for mp4_path in glob.glob(f'{in_path}/*/*.mp4'):
     start_time = time.time()
-    print(f'Testing on {video_name}')
-    folder = output_folder + video_name.split("/")[-2]
+    print(f'{mp4_path} 進行瞳孔追蹤。。。')
+    date_site_patient_path = f'{out_path}/{mp4_path.split("/")[-2]}'
     try:
-        os.mkdir(folder)
-        print(f'Making {folder}')
+        os.mkdir(date_site_patient_path)
+        print(f'新增 {date_site_patient_path}')
     except:
-        print(f'{folder}資料夾已存在')
+        print(f'{date_site_patient_path} 已存在')
     
-    vhit_name = video_name.replace(".mp4", ".csv")
+    vhit_name = mp4_path.replace(".mp4", ".csv")
     
     user_info, title, splitted_data = read_csv(vhit_name)
     if len(splitted_data) == 0 :
         continue  
-    output_video_name = folder + "/" + video_name.split("/")[-1]
-    xml_file_name = output_video_name.replace(".mp4",".xml")
-
-    right_output_pdf_name = output_video_name[:-4] + "_right_eye_test.pdf" 
-    left_output_pdf_name = output_video_name[:-4] + "_left_eye_test.pdf" 
+    output_mp4 = f'{date_site_patient_path}/{mp4_path.split("/")[-1]}'
+    output_xml = output_mp4[:-4] + ".xml"#output_mp4.replace(".mp4",".xml")
+    output_right = output_mp4[:-4] + "_right.pdf" 
+    output_left  = output_mp4[:-4] + "_left.pdf" 
     
-    out = cv2.VideoWriter(output_video_name, fourcc, 210, (384, 144), 0)
-    cap = cv2.VideoCapture(video_name)
+    out = cv2.VideoWriter(output_mp4, fourcc, 210, (384, 144), 0)
+    cap = cv2.VideoCapture(mp4_path)
     
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
@@ -346,12 +346,12 @@ for video_name in glob.glob('../Result/*/*.mp4'):
             position.append(index)
             
             left_result = images[0].astype(np.uint8)
-            cv2.circle(left_result,(round(index[0][1]), round(index[0][0])), 10, (0, 255, 255), 3)
+            cv2.circle(left_result, (int(round(index[0][1])), int(round(index[0][0]))), 10, (0, 255, 255), 3)
             text = "x = " + str(index[0][1]) + " " + "y = " + str(index[0][0])
             cv2.putText(left_result, text, (10, 120), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, (255, 255, 255), 1, cv2.LINE_AA)
             right_result = images[1].astype(np.uint8)
-            cv2.circle(right_result,(round(index[1][1]), round(index[1][0])), 10, (0, 255, 255), 3)
+            cv2.circle(right_result, (int(round(index[1][1])), int(round(index[1][0]))), 10, (0, 255, 255), 3)
             text = "x = " + str(index[1][1]) + " " + "y = " + str(index[1][0])
             cv2.putText(right_result, text, (10, 120), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, (255, 255, 255), 1, cv2.LINE_AA)            
@@ -829,8 +829,8 @@ for video_name in glob.glob('../Result/*/*.mp4'):
     plt.scatter(right_Vol_array ,left_eye_right_array, c = "gray")
     plt.plot(right_Vol_array, pred)
     '''
-    left_fig.savefig(left_output_pdf_name)
-    right_fig.savefig(right_output_pdf_name)
+    left_fig.savefig(output_left)
+    right_fig.savefig(output_right)
 
     plt.close('all')
     templete = create_dict_templete()
@@ -841,12 +841,12 @@ for video_name in glob.glob('../Result/*/*.mp4'):
     ICSPatient["Name"] = user_info[3]
     ICSPatient["Exam"] = user_info[4]
     ICSPatient["Mode"] = user_info[5]
-    ICSPatient["PatientID"] = folder.split("/")[1]
+    ICSPatient["PatientID"] = date_site_patient_path.split('/')[-1].split('_')[-1]
 
     HITest = ICSPatient["HITest"]
     HITest["NumAcceptedLeftImpulses"] = str(left_count)
     HITest["NumAcceptedRightImpulses"] = str(right_count)
-    HITest["PatientUID"] = video_name.split("/")[-1][:-4]
+    HITest["PatientUID"] = mp4_path.split("/")[-1][:-4]
     
     HIImpulse_temp = HITest["HIImpulse"][0].copy()
     HITest["HIImpulse"] = []
@@ -861,14 +861,14 @@ for video_name in glob.glob('../Result/*/*.mp4'):
         HITest["HIImpulse"].append(HIImpulse_temp.copy())
     
     ICSVideo = ICSPatient["ICSVideo"]
-    ICSVideo["FileNameWithPath"] = video_name
+    ICSVideo["FileNameWithPath"] = mp4_path
     ICSVideo["FrameRate"] = str(210)
-    ICSVideo["VideoUID"] = video_name.split("/")[-1][:-4]
+    ICSVideo["VideoUID"] = mp4_path.split("/")[-1][:-4]
 
 
 
     # out_xml = xmltodict.unparse(templete, pretty=True)
-    # with open(xml_file_name, 'w') as file:
+    # with open(output_xml, 'w') as file:
     #     file.write(out_xml)
     
     
