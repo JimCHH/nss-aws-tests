@@ -263,17 +263,17 @@ fps = []
 #video_folder = "C:/Users/lab70929/Downloads/usbcam_s3/usbcam_s/usbcam/bin/Debug/success/"
 
 # video_folder = os.getcwd()[:-6] + "Result"
-in_path  = os.path.expanduser('~') + '/first_in'
-out_path = os.path.expanduser('~') + '/first_out'
+source = f'{os.path.expanduser("~")}/s3/{date_site_patient.split("_")[1]}/{date_site_patient}'
+target = f'{os.path.expanduser("~")}/s3/Reports'
 # video_list = glob.glob(video_folder+ "/*/" + "*.mp4")
 gain_type = 0
 
 #imu_list = glob.glob(video_folder+"*.csv")
 #mp4_path = video_list[11]
-for mp4_path in glob.glob(f'{in_path}/*/*.mp4'):
+for mp4_path in glob.glob(f'{source}/*.mp4'):
     start_time = time.time()
     print(f'{mp4_path} 進行瞳孔追蹤。。。')
-    date_site_patient_path = f'{out_path}/{mp4_path.split("/")[-2]}'
+    date_site_patient_path = f'{target}/{mp4_path.split("/")[-2]}'
     try:
         os.mkdir(date_site_patient_path)
         print(f'新增 {date_site_patient_path}')
