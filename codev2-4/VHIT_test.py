@@ -14,7 +14,7 @@ import parameters
 import cv2
 import glob
 import pandas as pd
-import xmltodict
+# import xmltodict
 from scipy.interpolate import interp1d
 from sklearn.linear_model import LinearRegression
 device = torch.device("cuda")
@@ -263,7 +263,7 @@ fps = []
 #video_folder = "C:/Users/lab70929/Downloads/usbcam_s3/usbcam_s/usbcam/bin/Debug/success/"
 
 # video_folder = os.getcwd()[:-6] + "Result"
-output_folder = '../Reports/'#"video/"
+output_folder = '~/Reports/'#"video/"
 # video_list = glob.glob(video_folder+ "/*/" + "*.mp4")
 gain_type = 0
 
@@ -867,9 +867,9 @@ for video_name in glob.glob('../Result/*/*.mp4'):
 
 
 
-    out_xml = xmltodict.unparse(templete, pretty=True)
-    with open(xml_file_name, 'w') as file:
-        file.write(out_xml)
+    # out_xml = xmltodict.unparse(templete, pretty=True)
+    # with open(xml_file_name, 'w') as file:
+    #     file.write(out_xml)
     
     
 
