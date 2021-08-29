@@ -25,7 +25,7 @@ def lambda_handler(event, context):
 
     result = []
     for instance in instances:
-        for t in range(10):
+        for t in range(14):
             try:
                 text = f'{EC2[instance]} 關機'
                 ec2.stop_instances(InstanceIds=[instance])

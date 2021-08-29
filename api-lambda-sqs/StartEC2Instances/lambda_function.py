@@ -25,7 +25,7 @@ def lambda_handler(event, context):
 
     result = []
     for instance in instances:
-        for t in range(10):
+        for t in range(14):
             try:
                 text = f'{EC2[instance]} 開機'
                 ec2.start_instances(InstanceIds=[instance])
