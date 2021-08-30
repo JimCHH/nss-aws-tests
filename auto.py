@@ -4,22 +4,21 @@ logging.basicConfig(
     filename='auto.py.log',
     datefmt='%Y-%m-%d %H:%M:%S',
     format='[%(asctime)s %(levelname).3s] %(message)s')
-logging.info('Get started')
+logging.info('開始')
 
 import os
 os.chdir('codev2_4')
 
-import time
 from api_lambda_sqs import sqs
+import time
 while True:
     try:
+        command = f'python VHIT_test.py {" ".join(sqs.cases())}'
+        os.system(command)
+        logging.info(command)
         # print(sqs.cases())
         # time.sleep(10)
-        os.system(f'python VHIT_test.py {" ".join(sqs.cases())}')
     except:
         break
 
-import requests
-with open('../.url') as f:
-    api = f.readline()
-logging.info(requests.get(f'{api}/stop').text.replace('\n', '  ') + '\n==============================================================')
+logging.info('結束\n')
