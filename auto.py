@@ -1,3 +1,4 @@
+#!/home/ubuntu/anaconda3/envs/pytorch_p36/bin/python
 import os
 os.chdir(os.path.join(os.path.expanduser('~'), 'nss-aws-tests', 'codev2_4'))
 
