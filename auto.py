@@ -7,7 +7,7 @@ logging.basicConfig(
 logging.info('Get started')
 
 import os
-os.chdir('codev2-4')
+os.chdir('codev2_4')
 
 import time
 from api_lambda_sqs import sqs
