@@ -1,7 +1,7 @@
 import logging
 logging.basicConfig(
     level=logging.INFO, 
-    filename='auto.log',
+    filename='auto.py.log',
     datefmt='%Y-%m-%d %H:%M:%S',
     format='[%(asctime)s %(levelname).3s] %(message)s')
 logging.info('Get started')
@@ -9,10 +9,15 @@ logging.info('Get started')
 import os
 os.chdir('codev2-4')
 
-queue = ['20200202_H14_NSS62471', '20200204_H14_NSS62471']
-while queue:
-    os.system(f'python VHIT_test.py {" ".join(queue)}')
-    queue = []
+import time
+from api_lambda_sqs import sqs
+while True:
+    try:
+        # print(sqs.cases())
+        # time.sleep(10)
+        os.system(f'python VHIT_test.py {" ".join(sqs.cases())}')
+    except:
+        break
 
 import requests
 with open('../.url') as f:
