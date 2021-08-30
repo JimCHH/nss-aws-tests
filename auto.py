@@ -1,13 +1,13 @@
+import os
+os.chdir(os.path.join(os.path.expanduser('~'), 'nss-aws-tests', 'codev2_4'))
+
 import logging
 logging.basicConfig(
     level=logging.INFO, 
-    filename='auto.py.log',
+    filename=os.path.join(os.path.expanduser('~'), 'nss-aws-tests', 'auto.py.log'),
     datefmt='%Y-%m-%d %H:%M:%S',
     format='[%(asctime)s %(levelname).3s] %(message)s')
 logging.info('開始')
-
-import os
-os.chdir('codev2_4')
 
 from api_lambda_sqs import sqs
 import time
