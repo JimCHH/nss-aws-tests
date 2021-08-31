@@ -4,7 +4,7 @@ instances = ['i-03a49fe156346239a', 'i-0fb06f7d468a63de1']
 ec2 = boto3.client('ec2', region_name=region)
 EC2 = dict(zip(instances, ['Storage Gateway', 'p2.xlarge']))
 sqs = boto3.client('sqs', region_name=region)
-url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploading_cases'
+url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploading_cases.fifo'
 
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
