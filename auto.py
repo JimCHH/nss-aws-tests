@@ -12,11 +12,11 @@ from api_lambda_sqs import sqs
 import time
 while True:
     try:
-        # command = f'python VHIT_test.py {" ".join(sqs.cases())}'
-        # os.system(command)
-        # logging.info(command)
-        logging.info(sqs.cases())
-        time.sleep(3)
+        command = f'python VHIT_test.py {" ".join(sqs.cases())}'
+        os.system(command)
+        logging.info(command)
+        # logging.info(sqs.cases())
+        # time.sleep(3)
     except Exception as f_ck:
         logging.error(f_ck)
         break
