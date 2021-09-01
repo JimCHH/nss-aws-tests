@@ -37,15 +37,15 @@ def lambda_handler(event, context):
     for instance in instances:
         for t in range(14):
             try:
-                text = f'{EC2[instance]} 開機'
                 ec2.start_instances(InstanceIds=[instance])
-                # line_bot_api.push_message(group_id, TextSendMessage(text=text))
+                text = f'{EC2[instance]} 開機'
                 print(text)
+                # line_bot_api.push_message(group_id, TextSendMessage(text=text))
                 break
             except:
                 text += f'失敗！60秒後重試第{t+1}次'
-                # line_bot_api.push_message(group_id, TextSendMessage(text=text))
                 print(text)
+                # line_bot_api.push_message(group_id, TextSendMessage(text=text))
                 time.sleep(60)
             finally:
                 result.append(text)
