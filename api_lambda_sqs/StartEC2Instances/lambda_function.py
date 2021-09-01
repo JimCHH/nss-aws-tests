@@ -39,13 +39,13 @@ def lambda_handler(event, context):
             try:
                 text = f'{EC2[instance]} 開機'
                 ec2.start_instances(InstanceIds=[instance])
-                print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
+                print(text)
                 break
             except:
                 text += f'失敗！60秒後重試第{t+1}次'
-                print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
+                print(text)
                 time.sleep(60)
             finally:
                 result.append(text)
@@ -55,5 +55,5 @@ def lambda_handler(event, context):
     response['headers'] = {}
     response['headers']['Content-Type'] = 'text/plain; charset=UTF-8'
     response['body'] = '\n'.join(result)
-    line_bot_api.push_message(group_id, TextSendMessage(text='\n'.join(result)))
+    line_bot_api.push_message(group_id, TextSendMessage(text=response['body']))
     return response
