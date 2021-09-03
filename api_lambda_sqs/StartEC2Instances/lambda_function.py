@@ -12,7 +12,7 @@ with open('token.txt') as f:
     channel_access_token = f.readline()
 line_bot_api = LineBotApi(channel_access_token)
 group_id = 'C8e0c9458a13b4dad203fcc224190a6f8'
-# group_id = 'U41dda7349d30c51c503127901df2f27a' # push myself to debug
+# group_id = 'U41dda7349d30c51c503127901df2f27a' # uncomment to push to myself
 
 import urllib.parse
 import time
