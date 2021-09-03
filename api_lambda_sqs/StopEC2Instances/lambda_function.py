@@ -38,8 +38,8 @@ def lambda_handler(event, context):
     for instance in instances:
         for t in range(14):
             try:
-                ec2_client.stop_instances(InstanceIds=[instance])
                 text = f'{custom_name[instance]} 關機'
+                ec2_client.stop_instances(InstanceIds=[instance])
                 print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
                 break
