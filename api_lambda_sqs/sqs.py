@@ -1,4 +1,4 @@
-import logging
+import logging, os
 logging.basicConfig(
     level=logging.INFO, 
     filename=os.path.join(os.path.expanduser('~'), 'nss-aws-tests', 'auto.py.log'),
