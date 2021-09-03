@@ -1,9 +1,9 @@
 import boto3
 region = 'eu-central-1'
 instances = ['i-03a49fe156346239a', 'i-0fb06f7d468a63de1']
-ec2 = boto3.client('ec2', region_name=region)
-EC2 = dict(zip(instances, ['Storage Gateway', 'p2.xlarge']))
-sqs = boto3.client('sqs', region_name=region)
+custom_name = dict(zip(instances, ['Storage Gateway', 'p2.xlarge']))
+ec2_client = boto3.client('ec2', region_name=region)
+sqs_client = boto3.client('sqs', region_name=region)
 url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploading_cases'
 
 from linebot import LineBotApi
@@ -20,7 +20,7 @@ def lambda_handler(event, context):
     try:
         # query = urllib.parse.parse_qs(event['queryStringParameters'])
         query = event['queryStringParameters'] # ALREADY a <class 'dict'> parsed by Chrome and Python-requests
-        sqs.send_message(QueueUrl=url, MessageBody=str(query))
+        sqs_client.send_message(QueueUrl=url, MessageBody=str(query))
         site  = query['site']
         cases = query['cases']
     except:
@@ -37,8 +37,8 @@ def lambda_handler(event, context):
     for instance in instances:
         for t in range(14):
             try:
-                ec2.stop_instances(InstanceIds=[instance])
-                text = f'{EC2[instance]} 關機'
+                ec2_client.stop_instances(InstanceIds=[instance])
+                text = f'{custom_name[instance]} 關機'
                 print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
                 break
