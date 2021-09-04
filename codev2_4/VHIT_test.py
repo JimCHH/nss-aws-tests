@@ -19,6 +19,9 @@ from unet import UNet
 import torch
 import xmltodict
 
+# Deployed on p2.xlarge by 1001000.io
+home = '/home/ubuntu'
+
 device = torch.device("cuda")
 data_length = 400
 def read_csv(path):
@@ -262,8 +265,8 @@ fps = []
 #video_folder = "C:/Users/lab70929/Downloads/usbcam_s3/usbcam_s/usbcam/bin/Debug/success/"
 # video_folder = os.getcwd()[:-6] + "Result"
 for date_site_patient in sys.argv[1:]:
-    source = f'{os.path.expanduser("~")}/S3/{date_site_patient.split("_")[1]}/Result/{date_site_patient}'
-    target = f'{os.path.expanduser("~")}/S3/Reports'
+    source = f'{home}/S3/{date_site_patient.split("_")[1]}/Result/{date_site_patient}'
+    target = f'{home}/S3/Reports'
     # video_list = glob.glob(video_folder+ "/*/" + "*.mp4")
     gain_type = 0
     #imu_list = glob.glob(video_folder+"*.csv")

@@ -1,7 +1,7 @@
 import logging, os
 logging.basicConfig(
     level=logging.INFO, 
-    filename=os.path.join(os.path.expanduser('~'), 'nss-aws-tests', 'auto.py.log'),
+    filename=os.path.join('/home/ubuntu', 'nss-aws-tests', 'auto.py.log'),
     datefmt='%Y-%m-%d %H:%M:%S',
     format='[%(asctime)s %(levelname).3s] %(message)s')
 
