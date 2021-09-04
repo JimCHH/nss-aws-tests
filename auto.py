@@ -1,5 +1,8 @@
-import os
+import os, time
+os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests'))
+from api_lambda_sqs import sqs
 os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'codev2_4'))
+
 
 import logging
 logging.basicConfig(
@@ -8,8 +11,6 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     format='[%(asctime)s %(levelname).3s] %(message)s')
 
-from api_lambda_sqs import sqs
-import time
 idle = 0
 while idle < 60:
     try:
