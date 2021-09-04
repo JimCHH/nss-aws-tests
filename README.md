@@ -1,17 +1,10 @@
 1. `bash setup.sh`
-1. `sudo cp -r .aws /root`
-1. `sudo nano /etc/rc.local`
+2. `sudo cp -r .aws /root`
+3. `sudo nano /root/.bashrc`
 ```
-#!/bin/bash
-
-# DLAMI Configurations
-/opt/aws/dlami/bin/init
-
-# DLAMI Conda Configurations
-/opt/aws/dlami/bin/init_conda
-
-# auto.py
+. /home/ubuntu/.bashrc
+```
+4. `sudo nano /etc/rc.local`
+```
 python /home/ubuntu/nss-aws-tests/auto.py
-
-exit 0
 ```
