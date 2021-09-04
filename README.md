@@ -1,4 +1,6 @@
-`sudo nano /etc/rc.local`
+1. `bash setup.sh`
+1. `sudo cp -r .aws /root`
+1. `sudo nano /etc/rc.local`
 ```
 #!/bin/bash
 
@@ -9,7 +11,6 @@
 /opt/aws/dlami/bin/init_conda
 
 # auto.py
-source /home/ubuntu/.bashrc
 python /home/ubuntu/nss-aws-tests/auto.py
 
 exit 0
