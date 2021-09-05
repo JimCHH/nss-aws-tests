@@ -14,7 +14,7 @@ logging.basicConfig(
 idle = 0
 while idle < 60:
     try:
-        command = f'python VHIT_test.py {" ".join(sqs.cases())}'
+        command = 'python VHIT_test.py ' + ' '.join(sqs.cases())
         os.system(command)
         logging.info(command)
         idle = 0
