@@ -36,6 +36,8 @@ def lambda_handler(event, context):
 
     if query:
         # line_bot_api.push_message(group_id, TextSendMessage(text=f'{site}上傳{cases}'))
+        payload = {'message': f'{site}上傳{cases}'}
+        requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
         result = [f'{site}上傳{cases}']#[str(query)]
     else:
         result = []
@@ -47,18 +49,22 @@ def lambda_handler(event, context):
                 ec2_client.start_instances(InstanceIds=[instance])
                 print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
+                payload = {'message': text}
+                requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
                 break
             except:
                 text += f'失敗！60秒後重試第{t+1}次'
                 print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
+                payload = {'message': text}
+                requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
                 time.sleep(60)
             finally:
                 result.append(text)
 
     # line_bot_api.push_message(group_id, TextSendMessage(text='\n'.join(result)))
-    payload = {'message': '\n'+'\n'.join(result)}
-    requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
+    # payload = {'message': '\n'+'\n'.join(result)}
+    # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
     response = {}
     response['statusCode'] = 200
     response['headers'] = {}
