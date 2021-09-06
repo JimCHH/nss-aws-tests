@@ -3,7 +3,6 @@ os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests'))
 from api_lambda_sqs import sqs
 os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'codev2_4'))
 
-
 import logging
 logging.basicConfig(
     level=logging.INFO, 
