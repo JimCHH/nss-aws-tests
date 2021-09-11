@@ -53,7 +53,7 @@ def lambda_handler(event, context):
                 # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
                 break
             except:
-                text += f'失敗！60秒後重試第{t+1}次'
+                text += f'失敗60秒後重試第{t+1}次'
                 print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
                 # payload = {'message': text}
