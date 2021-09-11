@@ -1,30 +1,26 @@
-import os, time
-os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests'))
-from api_lambda_sqs import sqs
-os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'codev2_4'))
-
-import logging
+import logging, os
 logging.basicConfig(
     level=logging.INFO, 
     filename=os.path.join('/home/ubuntu', 'nss-aws-tests', 'auto.py.log'),
     datefmt='%Y-%m-%d %H:%M:%S',
     format='[%(asctime)s %(levelname).3s] %(message)s')
 
+os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests'))
+from api_lambda_sqs import sqs_uploading_cases
+from csv_corrector import correct
+os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'codev2_4'))
+
+import time
 idle = 0
 while idle < 60:
-    try:
-        command = 'python VHIT_test.py ' + ' '.join(sqs.cases())
-        os.system(command)
-        logging.info(command)
+    cases = sqs_uploading_cases.cases()
+    if cases:
+        correct(cases)
+        test4 = 'python VHIT_test.py ' + ' '.join(cases)
+        os.system(test4)
+        logging.info(test4)
         idle = 0
-        # logging.info(sqs.cases())
-        # time.sleep(3)
-    except KeyError:
-        logging.info('Messages available: 0')
-        time.sleep(60)
-        idle += 1
-    except Exception as f_ck:
-        logging.error(f_ck)
+    else:
         time.sleep(60)
         idle += 1
 

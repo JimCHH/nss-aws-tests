@@ -281,7 +281,8 @@ for date_site_patient in sys.argv[1:]:
         except:
             print(f'{date_site_patient_path} 已存在')
         
-        vhit_name = mp4_path.replace(".mp4", ".csv")
+        # vhit_name = mp4_path.replace(".mp4", ".csv")
+        vhit_name = mp4_path.replace(".mp4", "_CORRECTED.csv")
         
         user_info, title, splitted_data = read_csv(vhit_name)
         if len(splitted_data) == 0 :
