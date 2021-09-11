@@ -15,6 +15,8 @@ idle = 0
 while idle < 60:
     cases = sqs_uploading_cases.cases()
     if cases:
+        os.system('sudo umount /home/ubuntu/S3')
+        os.system('s3fs neurobit-asg /home/ubuntu/S3 -o passwd_file=/home/ubuntu/.aws/credentials-s3fs -o uid=1000 -o gid=1000')
         correct(cases)
         test4 = 'python VHIT_test.py ' + ' '.join(cases)
         os.system(test4)
