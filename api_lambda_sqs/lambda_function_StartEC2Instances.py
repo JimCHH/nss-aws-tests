@@ -19,29 +19,27 @@ import requests
 headers = {'Content-Type': 'application/x-www-form-urlencoded',
            'Authorization': f'Bearer {access_token}'}
 
-# import urllib.parse
+import urllib.parse
 import time
 
 def lambda_handler(event, context):
-    try:
-        # query = urllib.parse.parse_qs(event['queryStringParameters'])
-        query = event['queryStringParameters'] # ALREADY a <class 'dict'> parsed by Chrome and Python-requests
-        site  = query['site']
-        cases = query['cases']
-        sqs_client.send_message(QueueUrl=url, MessageBody=str(query))
-    except:
-        cases = None
+    query = event.get('queryStringParameters') # ALREADY a <class 'dict'> parsed by Chrome and Python-requests
+    # query = urllib.parse.parse_qs(event['queryStringParameters']) # uncomment to Test
+    print(query)
+    if query:
+        site  = query.get('site')
+        cases = query.get('cases')
+        if cases:
+            sqs_client.send_message(QueueUrl=url, MessageBody=str(query))
+            # line_bot_api.push_message(group_id, TextSendMessage(text=f'{site}上傳{cases}'))
+            # payload = {'message': f'{site}上傳{cases}'}
+            # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
+            cases = cases.replace(',', '\n')
+            result = [f'{site} 上傳\n{cases}']#[str(query)]
+        else:
+            result = [f'{site} 登入 NSS']
     else:
-        print(query)
-
-    if cases:
-        cases = cases.replace(',', '\n')
-        # line_bot_api.push_message(group_id, TextSendMessage(text=f'{site}上傳{cases}'))
-        # payload = {'message': f'{site}上傳{cases}'}
-        # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
-        result = [f'{site} 上傳\n{cases}']#[str(query)]
-    else:
-        result = [f'{site} 登入 NSS']
+        result = []
 
     for instance in instances:
         for t in range(14):
