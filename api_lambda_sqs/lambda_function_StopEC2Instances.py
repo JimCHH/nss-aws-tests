@@ -46,20 +46,22 @@ def lambda_handler(event, context):
             try:
                 text = f'{custom_name[instance]} 關機'
                 ec2_client.stop_instances(InstanceIds=[instance])
-                print(text)
-                # line_bot_api.push_message(group_id, TextSendMessage(text=text))
-                # payload = {'message': text}
-                # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
-                break
             except:
                 text += f'失敗60秒後重試第{t+1}次'
                 print(text)
                 # line_bot_api.push_message(group_id, TextSendMessage(text=text))
                 # payload = {'message': text}
                 # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
-                time.sleep(60)
-            finally:
                 result.append(text)
+                time.sleep(60)
+            else:
+                print(text)
+                # line_bot_api.push_message(group_id, TextSendMessage(text=text))
+                # payload = {'message': text}
+                # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
+                if not query:
+                    result.append(text)
+                break
 
     # line_bot_api.push_message(group_id, TextSendMessage(text='\n'.join(result)))
     payload = {'message': '\n'+'\n'.join(result)}
