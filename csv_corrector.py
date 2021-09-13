@@ -2,7 +2,7 @@ import sys, glob, re
 import pandas as pd
 
 def correct(case):
-    date_site_patient = case:
+    date_site_patient = case
     source = f'/home/ubuntu/S3/{date_site_patient.split("_")[1]}/Result/{date_site_patient}'
     for filepath in glob.glob(f'{source}/*.csv'):
         filepath_tsdf = filepath[:-4] + '_TimeSeriesDataFrame.CSV'
