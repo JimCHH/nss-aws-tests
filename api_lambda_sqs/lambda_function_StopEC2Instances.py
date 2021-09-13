@@ -26,21 +26,22 @@ def lambda_handler(event, context):
     try:
         # query = urllib.parse.parse_qs(event['queryStringParameters'])
         query = event['queryStringParameters'] # ALREADY a <class 'dict'> parsed by Chrome and Python-requests
-        sqs_client.send_message(QueueUrl=url, MessageBody=str(query))
         site  = query['site']
         cases = query['cases']
+        sqs_client.send_message(QueueUrl=url, MessageBody=str(query))
     except:
-        query = None
+        cases = None
     else:
         print(query)
 
-    if query:
+    if cases:
+        cases = cases.replace(',', '\n')
         # line_bot_api.push_message(group_id, TextSendMessage(text=f'{site}上傳{cases}'))
         # payload = {'message': f'{site}上傳{cases}'}
         # requests.post('https://notify-api.line.me/api/notify', headers=headers, data=payload)
-        result = [f'{site}上傳{cases}']#[str(query)]
+        result = [f'{site} 上傳\n{cases}']#[str(query)]
     else:
-        result = []
+        result = [f'{site} 登入 NSS']
 
     for instance in instances:
         for t in range(14):
