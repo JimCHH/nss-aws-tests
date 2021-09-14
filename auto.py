@@ -6,14 +6,14 @@ logging.basicConfig(
     format='[%(asctime)s %(levelname).3s] %(message)s')
 
 os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests'))
-from api_lambda_sqs import sqs_uploading_cases
+from api_lambda_sqs import sqs_uploaded_cases
 from csv_corrector import correct
 os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'codev2_4'))
 
 import time
 idle = 0
 while idle < 60:
-    cases = sqs_uploading_cases.cases()
+    cases = sqs_uploaded_cases.cases()
     if cases:
         for case in cases:
             test4 = f'python VHIT_test.py {case}'

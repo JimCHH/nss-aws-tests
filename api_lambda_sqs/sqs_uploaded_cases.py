@@ -8,12 +8,12 @@ logging.basicConfig(
 import boto3
 def cases():
     client = boto3.client('sqs')
-    url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploading_cases'
+    url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploaded_cases'
     msg = client.receive_message(QueueUrl=url)
-    logging.info('sqs_uploading_cases.py: client.receive_message')
+    logging.info('sqs_uploaded_cases.py: client.receive_message')
     if msg.get('Messages'):
         client.delete_message(QueueUrl=url, ReceiptHandle=msg['Messages'][0]['ReceiptHandle'])
-        logging.info('sqs_uploading_cases.py: client.delete_message')
+        logging.info('sqs_uploaded_cases.py: client.delete_message')
         payload = eval(msg['Messages'][0]['Body'])
         site = payload['site']
         cases = payload['cases'].split(',')

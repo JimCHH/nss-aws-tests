@@ -4,7 +4,7 @@ instances = ['i-03a49fe156346239a', 'i-0fb06f7d468a63de1']
 custom_name = dict(zip(instances, ['Storage Gateway', 'p2.xlarge']))
 ec2_client = boto3.client('ec2', region_name=region)
 sqs_client = boto3.client('sqs', region_name=region)
-url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploading_cases'
+url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploaded_cases'
 
 with open('tokens') as f:
     channel_access_token, access_token = f.readline().split()
