@@ -37,6 +37,8 @@ def lambda_handler(event, context):
             cases = cases.replace(',', '\n')
             result = [f'{site} 上傳\n{cases}']#[str(query)]
         else:
+            query['cases'] = ''
+            sqs_client.send_message(QueueUrl=url, MessageBody=str(query))
             result = [f'{site} 登入 NSS']
     else:
         result = []
