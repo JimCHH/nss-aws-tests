@@ -6,9 +6,9 @@ logging.basicConfig(
     format='[%(asctime)s %(levelname).3s] %(message)s')
 
 os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests'))
-from api_lambda_sqs import sqs_uploaded_cases
+from aws import sqs_uploaded_cases
 from csv_corrector import correct
-os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'codev2_4'))
+os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'tests'))
 
 import time
 idle = 0
