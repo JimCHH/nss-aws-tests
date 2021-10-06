@@ -6,6 +6,8 @@ logging.basicConfig(
     format='[%(asctime)s %(levelname).3s] %(message)s')
 
 os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests'))
+with open('aws/api') as f:
+    url = f.readline()
 from aws import sqs_uploaded_cases
 from csv_corrector import correct
 os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'tests'))
@@ -31,4 +33,4 @@ while idle < 60:
         idle += 1
 
 import requests
-logging.info(requests.get('https://deqg3un8ha.execute-api.eu-central-1.amazonaws.com/stop').text.replace('\n', ' '))
+requests.get(url)
