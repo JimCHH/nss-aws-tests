@@ -114,6 +114,9 @@ fps = []
 date_site_patient = sys.argv[1]
 source = f'/home/ubuntu/S3/{date_site_patient.split("_")[1]}/Result/{date_site_patient}'
 for mp4_path in glob.glob(f'{source}/*.mp4'):
+    if mp4_path[-9:-4] == 'Test4':
+        continue
+
     cap = cv2.VideoCapture(mp4_path)
     print(f'\nTesting U-Net on {cap.get(cv2.CAP_PROP_FRAME_COUNT):.0f} frames of {mp4_path.split("/")[-1]}')
 
