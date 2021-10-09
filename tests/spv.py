@@ -155,10 +155,10 @@ def SPV_computation(data, Interval, medfilt1_para):
   # SP_idx: all slow phase index in Eye position and velocity (green dot)
   # SP_v, SP_v_SP, SP_v_SP1, data_v
 
-def Nystagmus_type(data, locs, data_type):
+def Nystagmus_type(data, locs, axis):
   ## Nystagmus type classification
-  # data_type = 'Horizontal'
-  # data_type = 'Vertical'
+  # axis = 'Horizontal'
+  # axis = 'Vertical'
   data_m = data - np.mean(data)
   data_v = np.diff(data_m) / Interval  # for Nystagmus type classification
   saccade_array = np.sign(data_v[locs])
@@ -171,21 +171,21 @@ def Nystagmus_type(data, locs, data_type):
   list1 = [saccade_num_P, saccade_num_N, saccade_num_Z]
   saccade_num_max = list1.index(max(list1))
   if saccade_num_max == 0 and (saccade_num_N/saccade_num_P < 0.2):
-    if data_type == 'Horizontal':
-      type = 'LBN'
+    if axis == 'Horizontal':
+      nystagmus_type = 'LBN'
     else: # 'Vertical'
-      type = 'DBN'
+      nystagmus_type = 'DBN'
   elif saccade_num_max == 1 and (saccade_num_P/saccade_num_N < 0.2):
-    if data_type == 'Horizontal':
-      type = 'RBN'
+    if axis == 'Horizontal':
+      nystagmus_type = 'RBN'
     else: # 'Vertical'
-      type = 'UBN'
+      nystagmus_type = 'UBN'
   elif saccade_num_max == 2:
-    type = 'Unknown'
+    nystagmus_type = 'Unknown'
   else:
-    type = 'Jerks'
+    nystagmus_type = 'Jerks'
 
-  return type
+  return nystagmus_type
 
 # Test2 (Gaze evoked test) function def below, but the above function need to be defined first:
 def ismember(locs, gaze_interval):
@@ -248,35 +248,35 @@ Fs = 210 # 222 for EyeSeeCam
 Interval = 1/210 # 222 for EyeSeeCam
 medfilt1_para = 11 # filter parameter
 
-# input_test_name = pkl_list.split('_')[-4] # split string by '_' and output the last 4th string array
-def spv(mp4_path, data):
-  input_test_name = mp4_path[-9:-4]
+# TestN = pkl_list.split('_')[-4] # split string by '_' and output the last 4th string array
+def extraction(mp4_path, data):
+  TestN = mp4_path[-9:-4]
   T = data['Timestamps'] # load timestamps from data dictionary
   total_time = len(T)/210 # data time (sec)
   saccade_interval = (T[-1] / 210) / 10 # num/10s, T[-1]=total frame
-  
-  if (input_test_name == 'Test1') or (input_test_name == 'Test2'):
-    ## output all dictionary data
-    saccade_num_dict = {'Left': {}, 'Right':{}}
-    saccade_num_FR_dict = {'Left': {}, 'Right':{}}
-    SPV_mean_dict = {'Left': {}, 'Right':{}}
-    SPV_std_dict = {'Left': {}, 'Right':{}}
-    SPV_med_dict = {'Left': {}, 'Right':{}}
-    SPV_iqr_dict = {'Left': {}, 'Right':{}}
-    SPVd_ratio_dict = {'Left': {}, 'Right':{}}
-    data_m_dict = {'Left': {}, 'Right':{}}
-    SP_v_dict = {'Left': {}, 'Right':{}}
-    SP_idx_dict = {'Left': {}, 'Right':{}}
-    type_dict = {'Left': {}, 'Right':{}}
-    SP_v_SP_outlier_filtered_dict = {'Left': {}, 'Right':{}}
+  DATA = {'T': T}
+  if TestN == 'Test1' or TestN == 'Test2':
+    # DATA is all you need
+    DATA['saccade_num'] = {'Left': {}, 'Right': {}}
+    DATA['saccade_num_FR'] = {'Left': {}, 'Right': {}}
+    DATA['SPV_mean'] = {'Left': {}, 'Right': {}}
+    DATA['SPV_std'] = {'Left': {}, 'Right': {}}
+    DATA['SPV_med'] = {'Left': {}, 'Right': {}}
+    DATA['SPV_iqr'] = {'Left': {}, 'Right': {}}
+    DATA['SPVd_ratio'] = {'Left': {}, 'Right': {}}
+    DATA['data_m'] = {'Left': {}, 'Right': {}}
+    DATA['SP_v'] = {'Left': {}, 'Right': {}}
+    DATA['SP_idx'] = {'Left': {}, 'Right': {}}
+    DATA['SP_v_SP_outlier_filtered'] = {'Left': {}, 'Right': {}}
+    DATA['nystagmus_type'] = {'Left': {}, 'Right': {}}
 
     ## Horizontal data / Vertial data as input from Left eye / Right eye
-    eye_select = ['Left', 'Right']
-    dir_select = ['Horizontal', 'Vertical']
-    for eye_key in eye_select:
-      for dir_key in dir_select:
+    # eye_select = ['Left', 'Right']
+    # dir_select = ['Horizontal', 'Vertical']
+    for eye in ['Left', 'Right']:
+      for axis in ['Horizontal', 'Vertical']:
         ## VNG data fix zero value
-        data_f = fix_blink(data[eye_key][dir_key])
+        data_f = fix_blink(data[eye][axis])
         
         ## Nystagmus trial detection
         locs, pks = Nystagmus_extract(data_f, Fs, medfilt1_para)
@@ -287,78 +287,78 @@ def spv(mp4_path, data):
         SPV_mean, SPV_std, SPV_med, SPV_iqr, SPVd_ratio, SP_v, SP_idx, data_m, SP_v_SP, SP_v_SP1 = SPV_computation(data_f, Interval, medfilt1_para)
 
         ## Nystagmus type classification
-        type = Nystagmus_type(data_f, locs, dir_key) # data_type use "Horizontal" or "Vertical"
+        nystagmus_type = Nystagmus_type(data_f, locs, axis) # axis use "Horizontal" or "Vertical"
 
-        ## Updata dictionary data
-        saccade_num_dict[eye_key].update({dir_key: saccade_num})
-        saccade_num_FR_dict[eye_key].update({dir_key: saccade_num_FR})
-        SPV_mean_dict[eye_key].update({dir_key: SPV_mean})
-        SPV_std_dict[eye_key].update({dir_key: SPV_std})
-        SPV_med_dict[eye_key].update({dir_key: SPV_med})
-        SPV_iqr_dict[eye_key].update({dir_key: SPV_iqr})
-        SPVd_ratio_dict[eye_key].update({dir_key: SPVd_ratio})
-        data_m_dict[eye_key].update({dir_key: data_m})
-        SP_v_dict[eye_key].update({dir_key: SP_v})
-        SP_v_SP_outlier_filtered_dict[eye_key].update({dir_key: SP_v_SP1})
-        SP_idx_dict[eye_key].update({dir_key: SP_idx})
-        type_dict[eye_key].update({dir_key: type})
+        ## Updata DATA
+        DATA['saccade_num'][eye][axis] = saccade_num
+        DATA['saccade_num_FR'][eye][axis] = saccade_num_FR
+        DATA['SPV_mean'][eye][axis] = SPV_mean
+        DATA['SPV_std'][eye][axis] = SPV_std
+        DATA['SPV_med'][eye][axis] = SPV_med
+        DATA['SPV_iqr'][eye][axis] = SPV_iqr
+        DATA['SPVd_ratio'][eye][axis] = SPVd_ratio
+        DATA['data_m'][eye][axis] = data_m
+        DATA['SP_v'][eye][axis] = SP_v
+        DATA['SP_v_SP_outlier_filtered'][eye][axis] = SP_v_SP1
+        DATA['SP_idx'][eye][axis] = SP_idx
+        DATA['nystagmus_type'][eye][axis] = nystagmus_type
 
-    if input_test_name == 'Test2':
+    if TestN == 'Test2':
       ## output all dictionary data
       # Center
-      saccade_num_center_dict = {'Left': {}, 'Right':{}}
-      saccade_num_FR_center_dict = {'Left': {}, 'Right':{}}
-      SPV_mean_center_dict = {'Left': {}, 'Right':{}}
-      SPV_std_center_dict = {'Left': {}, 'Right':{}}
-      SPV_med_center_dict = {'Left': {}, 'Right':{}}
-      SPV_iqr_center_dict = {'Left': {}, 'Right':{}}
-      SPVd_ratio_center_dict = {'Left': {}, 'Right':{}}
-      SP_v_SP_outlier_filtered_center_dict = {'Left': {}, 'Right':{}}
+      DATA['saccade_num_center'] = {'Left': {}, 'Right': {}}
+      DATA['saccade_num_FR_center'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_mean_center'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_std_center'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_med_center'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_iqr_center'] = {'Left': {}, 'Right': {}}
+      DATA['SPVd_ratio_center'] = {'Left': {}, 'Right': {}}
+      DATA['SP_v_SP_outlier_filtered_center'] = {'Left': {}, 'Right': {}}
       # Right
-      saccade_num_right_dict = {'Left': {}, 'Right':{}}
-      saccade_num_FR_right_dict = {'Left': {}, 'Right':{}}
-      SPV_mean_right_dict = {'Left': {}, 'Right':{}}
-      SPV_std_right_dict = {'Left': {}, 'Right':{}}
-      SPV_med_right_dict = {'Left': {}, 'Right':{}}
-      SPV_iqr_right_dict = {'Left': {}, 'Right':{}}
-      SPVd_ratio_right_dict = {'Left': {}, 'Right':{}}
-      SP_v_SP_outlier_filtered_right_dict = {'Left': {}, 'Right':{}}
+      DATA['saccade_num_right'] = {'Left': {}, 'Right': {}}
+      DATA['saccade_num_FR_right'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_mean_right'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_std_right'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_med_right'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_iqr_right'] = {'Left': {}, 'Right': {}}
+      DATA['SPVd_ratio_right'] = {'Left': {}, 'Right': {}}
+      DATA['SP_v_SP_outlier_filtered_right'] = {'Left': {}, 'Right': {}}
       # Left
-      saccade_num_left_dict = {'Left': {}, 'Right':{}}
-      saccade_num_FR_left_dict = {'Left': {}, 'Right':{}}
-      SPV_mean_left_dict = {'Left': {}, 'Right':{}}
-      SPV_std_left_dict = {'Left': {}, 'Right':{}}
-      SPV_med_left_dict = {'Left': {}, 'Right':{}}
-      SPV_iqr_left_dict = {'Left': {}, 'Right':{}}
-      SPVd_ratio_left_dict = {'Left': {}, 'Right':{}}
-      SP_v_SP_outlier_filtered_left_dict = {'Left': {}, 'Right':{}}
+      DATA['saccade_num_left'] = {'Left': {}, 'Right': {}}
+      DATA['saccade_num_FR_left'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_mean_left'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_std_left'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_med_left'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_iqr_left'] = {'Left': {}, 'Right': {}}
+      DATA['SPVd_ratio_left'] = {'Left': {}, 'Right': {}}
+      DATA['SP_v_SP_outlier_filtered_left'] = {'Left': {}, 'Right': {}}
       # Up
-      saccade_num_up_dict = {'Left': {}, 'Right':{}}
-      saccade_num_FR_up_dict = {'Left': {}, 'Right':{}}
-      SPV_mean_up_dict = {'Left': {}, 'Right':{}}
-      SPV_std_up_dict = {'Left': {}, 'Right':{}}
-      SPV_med_up_dict = {'Left': {}, 'Right':{}}
-      SPV_iqr_up_dict = {'Left': {}, 'Right':{}}
-      SPVd_ratio_up_dict = {'Left': {}, 'Right':{}}
-      SP_v_SP_outlier_filtered_up_dict = {'Left': {}, 'Right':{}}
+      DATA['saccade_num_up'] = {'Left': {}, 'Right': {}}
+      DATA['saccade_num_FR_up'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_mean_up'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_std_up'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_med_up'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_iqr_up'] = {'Left': {}, 'Right': {}}
+      DATA['SPVd_ratio_up'] = {'Left': {}, 'Right': {}}
+      DATA['SP_v_SP_outlier_filtered_up'] = {'Left': {}, 'Right': {}}
       # Down
-      saccade_num_down_dict = {'Left': {}, 'Right':{}}
-      saccade_num_FR_down_dict = {'Left': {}, 'Right':{}}
-      SPV_mean_down_dict = {'Left': {}, 'Right':{}}
-      SPV_std_down_dict = {'Left': {}, 'Right':{}}
-      SPV_med_down_dict = {'Left': {}, 'Right':{}}
-      SPV_iqr_down_dict = {'Left': {}, 'Right':{}}
-      SPVd_ratio_down_dict = {'Left': {}, 'Right':{}}
-      SP_v_SP_outlier_filtered_down_dict = {'Left': {}, 'Right':{}}
+      DATA['saccade_num_down'] = {'Left': {}, 'Right': {}}
+      DATA['saccade_num_FR_down'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_mean_down'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_std_down'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_med_down'] = {'Left': {}, 'Right': {}}
+      DATA['SPV_iqr_down'] = {'Left': {}, 'Right': {}}
+      DATA['SPVd_ratio_down'] = {'Left': {}, 'Right': {}}
+      DATA['SP_v_SP_outlier_filtered_down'] = {'Left': {}, 'Right': {}}
 
 
       ## Horizontal data / Vertial data as input from Left eye / Right eye
-      eye_select = ['Left', 'Right']
-      dir_select = ['Horizontal', 'Vertical']
-      for eye_key in eye_select:
+      # eye_select = ['Left', 'Right']
+      # dir_select = ['Horizontal', 'Vertical']
+      for eye in ['Left', 'Right']:
         ## VNG data fix zero value
-        data_f0 = fix_blink(data[eye_key][dir_select[0]])
-        data_f1 = fix_blink(data[eye_key][dir_select[1]])
+        data_f0 = fix_blink(data[eye]['Horizontal'])
+        data_f1 = fix_blink(data[eye]['Vertical'])
 
         center_interval, right_interval, left_interval, up_interval, down_interval = gaze_interval_split(data_f0, data_f1)
         SP_idx_center = np.intersect1d(SP_idx, center_interval)
@@ -367,9 +367,9 @@ def spv(mp4_path, data):
         SP_idx_up = np.intersect1d(SP_idx, up_interval)
         SP_idx_down = np.intersect1d(SP_idx, down_interval)
 
-        for dir_key in dir_select:
+        for axis in ['Horizontal', 'Vertical']:
           ## VNG data fix zero value
-          data_f = fix_blink(data[eye_key][dir_key])
+          data_f = fix_blink(data[eye][axis])
 
           ## Nystagmus trial detection
           locs, pks = Nystagmus_extract(data_f, Fs, medfilt1_para)
@@ -398,80 +398,70 @@ def spv(mp4_path, data):
         
           ## Update dictionary data
           # Center
-          saccade_num_center_dict[eye_key].update({dir_key: saccade_num_center})
-          saccade_num_FR_center_dict[eye_key].update({dir_key: saccade_num_FR_center})
-          SPV_mean_center_dict[eye_key].update({dir_key: SPV_mean_center})
-          SPV_std_center_dict[eye_key].update({dir_key: SPV_std_center})
-          SPV_med_center_dict[eye_key].update({dir_key: SPV_med_center})
-          SPV_iqr_center_dict[eye_key].update({dir_key: SPV_iqr_center})
-          SPVd_ratio_center_dict[eye_key].update({dir_key: SPVd_ratio_center})
-          SP_v_SP_outlier_filtered_center_dict[eye_key].update({dir_key: SP_v_SP1_center})
+          DATA['saccade_num_center'][eye][axis] = saccade_num_center
+          DATA['saccade_num_FR_center'][eye][axis] = saccade_num_FR_center
+          DATA['SPV_mean_center'][eye][axis] = SPV_mean_center
+          DATA['SPV_std_center'][eye][axis] = SPV_std_center
+          DATA['SPV_med_center'][eye][axis] = SPV_med_center
+          DATA['SPV_iqr_center'][eye][axis] = SPV_iqr_center
+          DATA['SPVd_ratio_center'][eye][axis] = SPVd_ratio_center
+          DATA['SP_v_SP_outlier_filtered_center'][eye][axis] = SP_v_SP1_center
           # Right
-          saccade_num_right_dict[eye_key].update({dir_key: saccade_num_right})
-          saccade_num_FR_right_dict[eye_key].update({dir_key: saccade_num_FR_right})
-          SPV_mean_right_dict[eye_key].update({dir_key: SPV_mean_right})
-          SPV_std_right_dict[eye_key].update({dir_key: SPV_std_right})
-          SPV_med_right_dict[eye_key].update({dir_key: SPV_med_right})
-          SPV_iqr_right_dict[eye_key].update({dir_key: SPV_iqr_right})
-          SPVd_ratio_right_dict[eye_key].update({dir_key: SPVd_ratio_right})
-          SP_v_SP_outlier_filtered_right_dict[eye_key].update({dir_key: SP_v_SP1_right})
+          DATA['saccade_num_right'][eye][axis] = saccade_num_right
+          DATA['saccade_num_FR_right'][eye][axis] = saccade_num_FR_right
+          DATA['SPV_mean_right'][eye][axis] = SPV_mean_right
+          DATA['SPV_std_right'][eye][axis] = SPV_std_right
+          DATA['SPV_med_right'][eye][axis] = SPV_med_right
+          DATA['SPV_iqr_right'][eye][axis] = SPV_iqr_right
+          DATA['SPVd_ratio_right'][eye][axis] = SPVd_ratio_right
+          DATA['SP_v_SP_outlier_filtered_right'][eye][axis] = SP_v_SP1_right
           # Left
-          saccade_num_left_dict[eye_key].update({dir_key: saccade_num_left})
-          saccade_num_FR_left_dict[eye_key].update({dir_key: saccade_num_FR_left})
-          SPV_mean_left_dict[eye_key].update({dir_key: SPV_mean_left})
-          SPV_std_left_dict[eye_key].update({dir_key: SPV_std_left})
-          SPV_med_left_dict[eye_key].update({dir_key: SPV_med_left})
-          SPV_iqr_left_dict[eye_key].update({dir_key: SPV_iqr_left})
-          SPVd_ratio_left_dict[eye_key].update({dir_key: SPVd_ratio_left})
-          SP_v_SP_outlier_filtered_left_dict[eye_key].update({dir_key: SP_v_SP1_left})
+          DATA['saccade_num_left'][eye][axis] = saccade_num_left
+          DATA['saccade_num_FR_left'][eye][axis] = saccade_num_FR_left
+          DATA['SPV_mean_left'][eye][axis] = SPV_mean_left
+          DATA['SPV_std_left'][eye][axis] = SPV_std_left
+          DATA['SPV_med_left'][eye][axis] = SPV_med_left
+          DATA['SPV_iqr_left'][eye][axis] = SPV_iqr_left
+          DATA['SPVd_ratio_left'][eye][axis] = SPVd_ratio_left
+          DATA['SP_v_SP_outlier_filtered_left'][eye][axis] = SP_v_SP1_left
           # Up
-          saccade_num_up_dict[eye_key].update({dir_key: saccade_num_up})
-          saccade_num_FR_up_dict[eye_key].update({dir_key: saccade_num_FR_up})
-          SPV_mean_up_dict[eye_key].update({dir_key: SPV_mean_up})
-          SPV_std_up_dict[eye_key].update({dir_key: SPV_std_up})
-          SPV_med_up_dict[eye_key].update({dir_key: SPV_med_up})
-          SPV_iqr_up_dict[eye_key].update({dir_key: SPV_iqr_up})
-          SPVd_ratio_up_dict[eye_key].update({dir_key: SPVd_ratio_up})
-          SP_v_SP_outlier_filtered_up_dict[eye_key].update({dir_key: SP_v_SP1_up})
+          DATA['saccade_num_up'][eye][axis] = saccade_num_up
+          DATA['saccade_num_FR_up'][eye][axis] = saccade_num_FR_up
+          DATA['SPV_mean_up'][eye][axis] = SPV_mean_up
+          DATA['SPV_std_up'][eye][axis] = SPV_std_up
+          DATA['SPV_med_up'][eye][axis] = SPV_med_up
+          DATA['SPV_iqr_up'][eye][axis] = SPV_iqr_up
+          DATA['SPVd_ratio_up'][eye][axis] = SPVd_ratio_up
+          DATA['SP_v_SP_outlier_filtered_up'][eye][axis] = SP_v_SP1_up
           # Down
-          saccade_num_down_dict[eye_key].update({dir_key: saccade_num_down})
-          saccade_num_FR_down_dict[eye_key].update({dir_key: saccade_num_FR_down})
-          SPV_mean_down_dict[eye_key].update({dir_key: SPV_mean_down})
-          SPV_std_down_dict[eye_key].update({dir_key: SPV_std_down})
-          SPV_med_down_dict[eye_key].update({dir_key: SPV_med_down})
-          SPV_iqr_down_dict[eye_key].update({dir_key: SPV_iqr_down})
-          SPVd_ratio_down_dict[eye_key].update({dir_key: SPVd_ratio_down})
-          SP_v_SP_outlier_filtered_down_dict[eye_key].update({dir_key: SP_v_SP1_down})
+          DATA['saccade_num_down'][eye][axis] = saccade_num_down
+          DATA['saccade_num_FR_down'][eye][axis] = saccade_num_FR_down
+          DATA['SPV_mean_down'][eye][axis] = SPV_mean_down
+          DATA['SPV_std_down'][eye][axis] = SPV_std_down
+          DATA['SPV_med_down'][eye][axis] = SPV_med_down
+          DATA['SPV_iqr_down'][eye][axis] = SPV_iqr_down
+          DATA['SPVd_ratio_down'][eye][axis] = SPVd_ratio_down
+          DATA['SP_v_SP_outlier_filtered_down'][eye][axis] = SP_v_SP1_down
 
-      # Test2 for Saving the objects:
-      with open(mp4_path[:-4] + '_sp_dataset_API.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-          pickle.dump([SPV_mean_dict, SPV_std_dict, SPV_med_dict, SPV_iqr_dict, SPVd_ratio_dict, saccade_num_dict, saccade_num_FR_dict, T, data_m_dict, SP_v_dict, SP_v_SP_outlier_filtered_dict, SP_idx_dict,
-                      SPV_mean_center_dict, SPV_std_center_dict, SPV_med_center_dict, SPV_iqr_center_dict, SPVd_ratio_center_dict, saccade_num_center_dict, saccade_num_FR_center_dict, center_interval, SP_v_SP_outlier_filtered_center_dict,
-                      SPV_mean_right_dict, SPV_std_right_dict, SPV_med_right_dict, SPV_iqr_right_dict, SPVd_ratio_right_dict, saccade_num_right_dict, saccade_num_FR_right_dict, right_interval, SP_v_SP_outlier_filtered_right_dict,
-                      SPV_mean_left_dict, SPV_std_left_dict, SPV_med_left_dict, SPV_iqr_left_dict, SPVd_ratio_left_dict, saccade_num_left_dict, saccade_num_FR_left_dict, left_interval, SP_v_SP_outlier_filtered_left_dict,
-                      SPV_mean_up_dict, SPV_std_up_dict, SPV_med_up_dict, SPV_iqr_up_dict, SPVd_ratio_up_dict, saccade_num_up_dict, saccade_num_FR_up_dict, up_interval, SP_v_SP_outlier_filtered_up_dict,
-                      SPV_mean_down_dict, SPV_std_down_dict, SPV_med_down_dict, SPV_iqr_down_dict, SPVd_ratio_down_dict, saccade_num_down_dict, saccade_num_FR_down_dict, down_interval, SP_v_SP_outlier_filtered_down_dict], f)
+      DATA['center_interval'] = center_interval
+      DATA['right_interval'] = right_interval
+      DATA['left_interval'] = left_interval
+      DATA['up_interval'] = up_interval
+      DATA['down_interval'] = down_interval
 
-    else:
-      # Test1 for Saving the objects:
-      with open(mp4_path[:-4] + '_sp_dataset_API.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-          pickle.dump([SPV_mean_dict, SPV_std_dict, SPV_med_dict, SPV_iqr_dict, SPVd_ratio_dict, 
-                      saccade_num_dict, saccade_num_FR_dict, T, data_m_dict, 
-                      SP_v_dict, SP_v_SP_outlier_filtered_dict, SP_idx_dict], f)
-
-  else: 
-    # if input_test_name == 'Test3'
+  elif TestN == 'Test3':
+    # if TestN == 'Test3'
     ## output all dictionary data
-    data_m_dict = {'Left': {}, 'Right':{}}
-    skew_deviation_dict = {'Left': {}, 'Right':{}}
+    DATA['data_m'] = {'Left': {}, 'Right': {}}
+    DATA['skew_deviation'] = {'Left': {}, 'Right': {}}
 
     ## Horizontal data / Vertial data as input from Left eye / Right eye
-    eye_select = ['Left', 'Right']
-    dir_select = ['Horizontal', 'Vertical']
-    for eye_key in eye_select:
-      for dir_key in dir_select:
+    # eye_select = ['Left', 'Right']
+    # dir_select = ['Horizontal', 'Vertical']
+    for eye in ['Left', 'Right']:
+      for axis in ['Horizontal', 'Vertical']:
         ## VNG data fix zero value
-        data_f = fix_blink(data[eye_key][dir_key])
+        data_f = fix_blink(data[eye][axis])
         
         ## Preprocessing stage for zero mean
         data_m = data_f - np.mean(data_f)
@@ -480,9 +470,9 @@ def spv(mp4_path, data):
         skew_deviation = skewD(data_m)
 
         ## Updata dictionary data
-        data_m_dict[eye_key].update({dir_key: data_m})
-        skew_deviation_dict[eye_key].update({dir_key: skew_deviation})
+        DATA['data_m'][eye][axis] = data_m
+        DATA['skew_deviation'][eye][axis] = skew_deviation
 
-    # Test3 for Saving the objects:
-    with open(mp4_path[:-4] + '_sp_dataset_API.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
-        pickle.dump([skew_deviation_dict, T, data_m_dict], f)
+  # DATA save as pkl for Test1 or Test2 or Test3
+  with open(mp4_path[:-4] + '_sp_dataset_API.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
+      pickle.dump(DATA, f)

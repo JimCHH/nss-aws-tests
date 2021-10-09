@@ -1,4 +1,5 @@
-from spv import *
+from extraction import *
+from visualization import *
 
 import sys
 
@@ -202,4 +203,5 @@ for mp4_path in glob.glob(f'{source}/*.mp4'):
     # with open(mp4_path[:-4] + '_unet_pixel_API.pkl', 'wb') as f:
     #     pickle.dump(data, f)
 
-    spv(mp4_path, data)
+    extraction(mp4_path, data)
+    visualization(mp4_path[:-4] + '_sp_dataset_API.pkl')
