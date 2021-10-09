@@ -18,7 +18,7 @@ import re
 import time
 import calendar
 import os
-from google.colab import drive 
+# from google.colab import drive 
 from selenium import webdriver
 
 # import reportlab library
@@ -38,41 +38,41 @@ wd = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
 print(wd.current_url)
 
 #------------------------------------------------------------------------------
-def nested_dict_to_pd_df(dict_, as_idx = False):
+def nested_dict_to_pd_df(key, as_idx = False):
   # load dict name as col name
-  var_name = argname2('dict_').replace('_dict','')
-  
-  var_name = 'velocity' if (var_name == 'SP_v') else var_name
-  var_name = 'position' if (var_name == 'data_m') else var_name
+  # var_name = argname2('dict_').replace('_dict','')
+  name = key
+  name = 'velocity' if name == 'SP_v' else name
+  name = 'position' if name == 'data_m' else name
 
-  if (as_idx is False):
+  if as_idx is False:
     # load dict
-    df_LH = pd.DataFrame(dict_['Left']['Horizontal'], columns=[var_name])
-    df_LV = pd.DataFrame(dict_['Left']['Vertical'], columns=[var_name])
-    df_RH = pd.DataFrame(dict_['Right']['Horizontal'], columns=[var_name])
-    df_RV = pd.DataFrame(dict_['Right']['Vertical'], columns=[var_name])
-    df_T = pd.DataFrame(T, columns=[var_name])
+    df_LH = pd.DataFrame(DATA[key]['Left']['Horizontal'], columns=[name])
+    df_LV = pd.DataFrame(DATA[key]['Left']['Vertical'], columns=[name])
+    df_RH = pd.DataFrame(DATA[key]['Right']['Horizontal'], columns=[name])
+    df_RV = pd.DataFrame(DATA[key]['Right']['Vertical'], columns=[name])
+    df_T = pd.DataFrame(T, columns=[name])
     df = pd.concat([df_T, df_LH.reset_index(drop=True), df_LV.reset_index(drop=True),
             df_RH.reset_index(drop=True), df_RV.reset_index(drop=True)], 
             axis=1)
-    df.columns = pd.MultiIndex.from_tuples(zip(['Time',var_name, var_name, var_name, var_name],
+    df.columns = pd.MultiIndex.from_tuples(zip(['Time',name, name, name, name],
                                                ['Time','OS', 'OS', 'OD', 'OD'], 
                                              ['Time','Vertical', 'Horizontal', 'Vertical', 'Horizontal']))
   else:
-    df_LH = pd.DataFrame(dict_['Left']['Horizontal']).T
-    df_LV = pd.DataFrame(dict_['Left']['Vertical']).T
-    df_RH = pd.DataFrame(dict_['Right']['Horizontal']).T
-    df_RV = pd.DataFrame(dict_['Right']['Vertical']).T
+    df_LH = pd.DataFrame(DATA[key]['Left']['Horizontal']).T
+    df_LV = pd.DataFrame(DATA[key]['Left']['Vertical']).T
+    df_RH = pd.DataFrame(DATA[key]['Right']['Horizontal']).T
+    df_RV = pd.DataFrame(DATA[key]['Right']['Vertical']).T
     df = pd.concat([df_LH.reset_index(drop=True), df_LV.reset_index(drop=True),
               df_RH.reset_index(drop=True), df_RV.reset_index(drop=True)], 
               axis=1)
-    df.columns = pd.MultiIndex.from_tuples(zip([var_name, var_name, var_name, var_name],
+    df.columns = pd.MultiIndex.from_tuples(zip([name, name, name, name],
                                                ['OS', 'OS', 'OD', 'OD'], 
                                               ['Vertical', 'Horizontal', 'Vertical', 'Horizontal']))
     df= df.fillna(-1).astype(int)
 
 
-  return df, var_name #.unstack(level=1)
+  return df, name #.unstack(level=1)
 
 #------------------------------------------------------------------------------
 # this part will be used to call theme colors
@@ -133,10 +133,10 @@ def get_yt_LR_plot_CDS(e = None, direction = None, eye_v_df = None, eye_x_df = N
     t_ceil = math.ceil(max(t))  
 
     # SP_idx 
-    SP_index_LH = SP_idx_dict['Left']['Horizontal'][0] #list(SP_idx_input['SP_idx']['OS']['Horizontal'])
-    SP_index_LV = SP_idx_dict['Left']['Vertical'][0]#list(SP_idx_input['SP_idx']['OS']['Vertical'])
-    SP_index_RH = SP_idx_dict['Right']['Horizontal'][0]#list(SP_idx_input['SP_idx']['OD']['Horizontal'])
-    SP_index_RV = SP_idx_dict['Left']['Vertical'][0]#list(SP_idx_input['SP_idx']['OD']['Vertical'])
+    SP_index_LH = DATA['SP_idx']['Left']['Horizontal'][0] #list(SP_idx_input['SP_idx']['OS']['Horizontal'])
+    SP_index_LV = DATA['SP_idx']['Left']['Vertical'][0]#list(SP_idx_input['SP_idx']['OS']['Vertical'])
+    SP_index_RH = DATA['SP_idx']['Right']['Horizontal'][0]#list(SP_idx_input['SP_idx']['OD']['Horizontal'])
+    SP_index_RV = DATA['SP_idx']['Right']['Vertical'][0]#list(SP_idx_input['SP_idx']['OD']['Vertical'])
 
     # create a view using an filter
     view_LH = CDSView(source=source, filters=[IndexFilter(SP_index_LH)])    
@@ -382,7 +382,7 @@ def get_yt_LR_plot_CDS(e = None, direction = None, eye_v_df = None, eye_x_df = N
 
 #------------------------------------------------------------------------------
 def add_abline_and_annotation_to_p_by_test(p0, p_pj, test_num = None):
-  if (test_num ==2):
+  if test_num == 2:
     # x-t plot 
     gaze_type = ['Up','Down','Right','Left']
     p0.line(x= [0, max(source_df.dropna()['Time']['Time']['Time'])], 
@@ -408,24 +408,24 @@ def add_abline_and_annotation_to_p_by_test(p0, p_pj, test_num = None):
             line_width=line_width, line_color = "black", alpha =0.25)
 
 #------------------------------------------------------------------------------
-def get_raw_xt_and_vt_in_order(vt_OR_xt, test_str = None):
+def get_raw_xt_and_vt_in_order(vt_OR_xt, pkl_path = None):
   p_sum = [get_yt_LR_plot_CDS(eye_v_df = eye_v_df, eye_x_df = eye_x_df, 
                               vt_OR_xt = k, SP_idx_input = sp_idx_df,
                               legend = True) for k in ('xt','vt')]
   p1, p2 = p_sum
   p0, p_pj = p1 if (vt_OR_xt=='xt') else p2
 
-  if (test_str is not None):
-    test_num = which_test_seq(test_str)
+  if pkl_path:
+    test_num = int(pkl_path[-20])#which_test_seq(test_str)
     add_abline_and_annotation_to_p_by_test(p0, p_pj, test_num)
   return p0, p_pj
 
 #------------------------------------------------------------------------------
 # Function used to change Text and layout according to test:
- 
-def choose_test_layout(test_str = None, legend = True, 
+
+def test_layout(pkl_path, legend = True, 
                        preset_time_ceil = t_ceil, width =1550):
-  test_num = which_test_seq(test_str)
+  test_num = int(pkl_path[-20])#which_test_seq(test_str)
   print(test_num)
 
   # make subplot
@@ -445,11 +445,11 @@ def choose_test_layout(test_str = None, legend = True,
   lorem_block = Div(text = "")
 
   # define layout information according to test
-  if (test_num == [0]):
-      print("Test number not defined")
+  # if (test_num == [0]):
+  #     print("Test number not defined")
 
   # Test 1 header
-  elif (test_num == 1):
+  if test_num == 1:
       # Subplot layout
       print("working on Test 1 plot")
       
@@ -460,7 +460,7 @@ def choose_test_layout(test_str = None, legend = True,
       row2 = Div(text="<h3>No Fixation<h3/>" + 
                  "<p>The patient will be asked to look in a forward direction without fixation of the eyes (i.e. in rest).<p/>")
   # Test 2 header
-  elif (test_num == 2):
+  elif test_num == 2:
       # Subplot layout
       print("working on Test 2 plot")
       # 2)    Assessment of the eye (tracking) movements and nystagmus in the (extreme) corners 
@@ -491,7 +491,7 @@ def choose_test_layout(test_str = None, legend = True,
                  "The patient will be asked to follow the physician’s finger to the extreme corners are reached.")
 
   # Test 3 header
-  elif (test_num == 3):
+  elif test_num == 3:
       preset_time_ceil = test_3_preset_time
       print("working on Test 3 plot")
       # 3)    Test of skew (cover/uncover)
@@ -512,7 +512,7 @@ def choose_test_layout(test_str = None, legend = True,
       ## Test 3 doesn't need velocity
  
   # Test 4 header
-  elif (test_num == 4):
+  elif test_num == 4: # but in fact there is no Tes4.pkl
       print("working on Test 4 plot")
       # 4)    Video Head Impulse Test (vHIT)
       # Duration: circa 90-120 seconds. 
@@ -542,31 +542,37 @@ def choose_test_layout(test_str = None, legend = True,
   #   print('Reading drawing from svg...')
   #   return svg2rlg(svg)
 
-  export_svg(out, webdriver = wd, filename = pkl_path[:-18]+'pages.svg')
+  export_svg(out, webdriver = wd, filename = filename+'.svg')
   print('Reading drawing from svg...')
-  return svg2rlg(pkl_path[:-18]+'pages.svg')
+  return svg2rlg(filename+'.svg')
 
-  return out
+  # return out
 
 #------------------------------------------------------------------------------
 def visualization(pkl_path):
+    global DATA, T, eye_v_df, eye_x_df, eye_v_outrm_df, sp_idx_df, eye_v_outrm_abs_df, filename
+    filename = f'/home/ubuntu/S3/Reports/{pkl_path.split("/")[-2]}/{pkl_path.split("/")[-1][:-19]}'
+
     ## Dump variable from pkl_path
     with open(pkl_path,'rb') as f:  # Python 3: open(..., 'rb')
-        SPV_mean_dict, SPV_std_dict, SPV_med_dict, SPV_iqr_dict, SPVd_ratio_dict, saccade_num_dict, saccade_num_FR_dict, T, data_m_dict, SP_v_dict, SP_v_SP_outlier_filtered_dict, SP_idx_dict = pickle.load(f)
+        DATA = pickle.load(f)
 
     # prepare time series
     fps = 210.3
-    T= T/fps
+    T = DATA['T'] / fps
+
+    if not DATA.get('SP_v'):
+        return
 
     # Create real-world data frame
     # velocity
-    eye_v_df = nested_dict_to_pd_df(SP_v_dict)[0]
+    eye_v_df = nested_dict_to_pd_df('SP_v')[0]
     # position
-    eye_x_df = nested_dict_to_pd_df(data_m_dict)[0]
+    eye_x_df = nested_dict_to_pd_df('data_m')[0]
     # outlier_rm
-    eye_v_outrm_df = nested_dict_to_pd_df(SP_v_SP_outlier_filtered_dict)[0]
+    eye_v_outrm_df = nested_dict_to_pd_df('SP_v_SP_outlier_filtered')[0]
     # sp_idx
-    sp_idx_df = nested_dict_to_pd_df(SP_idx_dict, as_idx=True)[0]
+    sp_idx_df = nested_dict_to_pd_df('SP_idx', as_idx=True)[0]
     print(eye_v_df)
 
     # For statitics compute 
@@ -575,7 +581,7 @@ def visualization(pkl_path):
 
 
     output_notebook()
-    drawing = choose_test_layout(pkl_path)
+    drawing = test_layout(pkl_path)
     print('drawing is '+ str(drawing))
     print('Scaling SVG image...')
     scale_x = scale_y = 0.35  # scaling factor
@@ -611,7 +617,7 @@ def visualization(pkl_path):
     margin = 15 * mm
 
     # path 
-    doc = BaseDocTemplate(pkl_path[:-18]+'pages.pdf', pagesize=A4, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
+    doc = BaseDocTemplate(filename+'.pdf', pagesize=A4, rightMargin=margin, leftMargin=margin, topMargin=margin, bottomMargin=margin)
 
 
     #portrait_frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='portrait_frame ')
