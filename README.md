@@ -1,3 +1,4 @@
+0. `git clone https://github.com/x1001000/nss-aws-tests`
 1. `bash setup.sh`
 2. `sudo cp -r .aws /root`
 3. `sudo nano /etc/rc.local`
