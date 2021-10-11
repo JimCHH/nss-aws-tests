@@ -14,7 +14,7 @@ os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'tests'))
 
 import time
 idle = 0
-while idle < 10:
+while idle < 60:
     cases = sqs_uploaded_cases.cases()
     if cases:
         for case in cases:
