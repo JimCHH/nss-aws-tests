@@ -6,7 +6,7 @@ logging.basicConfig(
     format='[%(asctime)s %(levelname).3s] %(message)s')
 
 import boto3
-def cases():
+def site_cases():
     client = boto3.client('sqs')
     url = 'https://sqs.eu-central-1.amazonaws.com/960602048864/uploaded_cases'
     msg = client.receive_message(QueueUrl=url)
@@ -18,8 +18,9 @@ def cases():
         site = payload['site']
         cases = payload['cases'].split(',')
     else:
+        site = None
         cases = None
-    return cases
+    return site, cases
 
 if __name__ == '__main__':
-    print(cases())
+    print(site_cases())

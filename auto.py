@@ -15,15 +15,16 @@ os.chdir(os.path.join('/home/ubuntu', 'nss-aws-tests', 'tests'))
 import time
 idle = 0
 while idle < 60:
-    cases = sqs_uploaded_cases.cases()
-    if cases:
+    site, cases = sqs_uploaded_cases.site_cases()
+    if cases == ['']:
+        logging.info(f'{site} 登入 NSS')
+    elif cases:
         for case in cases:
 
             try:
                 os.system('sudo umount /home/ubuntu/S3')
                 os.system('s3fs neurobit-asg /home/ubuntu/S3 -o passwd_file=/home/ubuntu/.aws/credentials-s3fs -o uid=1000 -o gid=1000')
-                date_site_patient = case
-                source = f'/home/ubuntu/S3/{date_site_patient.split("_")[1]}/Result/{date_site_patient}'
+                source = f'/home/ubuntu/S3/{site}/Result/{case}'
             except Exception as e:
                 logging.info(e)
 
