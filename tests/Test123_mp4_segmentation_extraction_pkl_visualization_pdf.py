@@ -124,6 +124,7 @@ source = f'/home/ubuntu/S3/{date_site_patient.split("_")[1]}/Result/{date_site_p
 for mp4_path in glob.glob(f'{source}/*.mp4'):
     if mp4_path[-9:-4] == 'Test4':
         continue
+    logging.info(mp4_path.split('/')[-1][:-4] + '...')
 
     cap = cv2.VideoCapture(mp4_path)
     print(f'\nTesting U-Net on {cap.get(cv2.CAP_PROP_FRAME_COUNT):.0f} frames of {mp4_path.split("/")[-1]}')
@@ -215,5 +216,3 @@ for mp4_path in glob.glob(f'{source}/*.mp4'):
         visualization(mp4_path[:-4] + '_sp_dataset_API.pkl')
     except Exception as e:
         logging.info(e)
-    else:
-        logging.info(mp4_path.split('/')[-1][:-4])

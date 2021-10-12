@@ -277,6 +277,10 @@ gain_type = 0
 #imu_list = glob.glob(video_folder+"*.csv")
 #mp4_path = video_list[11]
 for mp4_path in glob.glob(f'{source}/*.mp4'):
+    if mp4_path[-9:-4] != 'Test4':
+        continue
+    logging.info(mp4_path.split('/')[-1][:-4] + '...')
+
     start_time = time.time()
     print(f'{mp4_path} 進行瞳孔追蹤。。。')
     date_site_patient_path = f'{target}/{mp4_path.split("/")[-2]}'
@@ -853,5 +857,3 @@ for mp4_path in glob.glob(f'{source}/*.mp4'):
     out_xml = xmltodict.unparse(templete, pretty=True)
     with open(output_xml, 'w') as file:
         file.write(out_xml)
-    
-    logging.info(mp4_path.split('/')[-1][:-4])
