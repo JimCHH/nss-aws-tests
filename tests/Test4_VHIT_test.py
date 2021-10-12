@@ -262,6 +262,13 @@ fps = []
 #video_folder = "C:/Users/lab70929/Downloads/usbcam_s3/usbcam_s/usbcam/bin/Debug/success/"
 # video_folder = os.getcwd()[:-6] + "Result"
 
+import logging, os
+logging.basicConfig(
+    level=logging.INFO, 
+    filename=os.path.join('/home/ubuntu', 'nss-aws-tests', 'auto.py.log'),
+    datefmt='%Y-%m-%d %H:%M:%S',
+    format='[%(asctime)s %(levelname).3s] %(message)s')
+
 date_site_patient = sys.argv[1]
 source = f'/home/ubuntu/S3/{date_site_patient.split("_")[1]}/Result/{date_site_patient}'
 target = f'/home/ubuntu/S3/Reports'
@@ -846,3 +853,5 @@ for mp4_path in glob.glob(f'{source}/*.mp4'):
     out_xml = xmltodict.unparse(templete, pretty=True)
     with open(output_xml, 'w') as file:
         file.write(out_xml)
+    
+    logging.info(mp4_path.split('/')[-1][:-4])

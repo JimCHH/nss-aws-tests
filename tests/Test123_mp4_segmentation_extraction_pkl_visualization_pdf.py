@@ -112,6 +112,13 @@ right_roi = []
 save_time = []
 fps = []
 
+import logging, os
+logging.basicConfig(
+    level=logging.INFO, 
+    filename=os.path.join('/home/ubuntu', 'nss-aws-tests', 'auto.py.log'),
+    datefmt='%Y-%m-%d %H:%M:%S',
+    format='[%(asctime)s %(levelname).3s] %(message)s')
+
 date_site_patient = sys.argv[1]
 source = f'/home/ubuntu/S3/{date_site_patient.split("_")[1]}/Result/{date_site_patient}'
 for mp4_path in glob.glob(f'{source}/*.mp4'):
@@ -203,5 +210,10 @@ for mp4_path in glob.glob(f'{source}/*.mp4'):
     # with open(mp4_path[:-4] + '_unet_pixel_API.pkl', 'wb') as f:
     #     pickle.dump(data, f)
 
-    extraction(mp4_path, data)
-    visualization(mp4_path[:-4] + '_sp_dataset_API.pkl')
+    try:
+        extraction(mp4_path, data)
+        visualization(mp4_path[:-4] + '_sp_dataset_API.pkl')
+    except Exception as e:
+        logging.info(e)
+    else:
+        logging.info(mp4_path.split('/')[-1][:-4])
