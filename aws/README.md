@@ -1,10 +1,11 @@
 ## 1 API Gateway
-1. hit and run a Lambda function to start or stop EC2 instances
+1. NSS backend API
 > Timeout must be a number from 50 to 30000 milliseconds.
 
-## 2 Lambda Functions
+## 3 Lambda Functions
 1. StartEC2Instances
 2. StopEC2Instances
+3. S3_bucket_objects_stats
 > The maximum timeout is 15 minutes.
 
 ## 1 Simple Queue Service
