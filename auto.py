@@ -17,7 +17,7 @@ idle = 0
 while idle < 60:
     site, cases = sqs_uploaded_cases.site_cases()
     if cases == ['']:
-        logging.info(f'{site} 登入 NSS')
+        logging.info(f'{site}登入NSS')
     elif cases:
         for case in cases:
 

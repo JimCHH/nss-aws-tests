@@ -31,10 +31,10 @@ def lambda_handler(event, context):
         cases = query.get('cases')
         if cases:
             cases = cases.replace(',', '\n')
-            result = [f'{site} 上傳\n{cases}']#[str(query)]
+            result = [f'{site}上傳\n{cases}']#[str(query)]
         else:
             query['cases'] = ''
-            result = [f'{site} 登入 NSS']
+            result = [f'{site}登入NSS']
         sqs_client.send_message(QueueUrl=url, MessageBody=str(query))
     else:
         result = []
