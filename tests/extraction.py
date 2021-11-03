@@ -463,6 +463,9 @@ def extraction(mp4_path, data):
         ## VNG data fix zero value
         data_f = fix_blink(data[eye][axis])
         
+        ## SPV parameter computation
+        SPV_mean, SPV_std, SPV_med, SPV_iqr, SPVd_ratio, SP_v, SP_idx, data_m, SP_v_SP, SP_v_SP1 = SPV_computation(data_f, Interval, medfilt1_para)
+
         ## Preprocessing stage for zero mean
         data_m = data_f - np.mean(data_f)
 
@@ -472,6 +475,8 @@ def extraction(mp4_path, data):
         ## Updata dictionary data
         DATA['data_m'][eye][axis] = data_m
         DATA['skew_deviation'][eye][axis] = skew_deviation
+        DATA['SP_v'][eye][axis] = SP_v
+        DATA['SP_idx'][eye][axis] = SP_idx
 
   # DATA save as pkl for Test1 or Test2 or Test3
   with open(mp4_path[:-4] + '_sp_dataset_API.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
